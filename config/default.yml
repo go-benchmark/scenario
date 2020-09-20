@@ -1,0 +1,22 @@
+# http configuration
+api: 
+  endpoint: owi-fs-loadtest.veriksystems.com
+# mqtt configuration
+mqtt:
+  endpoint:
+  prefix: org/vz-loadtest
+# testing agrument configuration
+testing:
+  user:
+    runServiceDelay: 10.0
+    startServiceDelay: 900.0
+    getDataInterval: 600.0
+    realtime:
+      interval: 86400.0
+      period: 600.0
+      heartbeatInterval: 6 
+  device:
+    realtimeInterval: 1.0
+    historyInterval: 100.0
+  service:
+    realtimeLength: 6
