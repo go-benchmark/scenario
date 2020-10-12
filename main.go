@@ -20,7 +20,7 @@ var log *logger.Log
 func export() scenario.Vus {
 	log = logger.NewStdLogger()
 	opts = &config.Options{
-		Host:        "owi-fs-loadtest.veriksystems.com",
+		Host:        "http://owi-fs-loadtest.veriksystems.com",
 		MQTTPrefix:  "org/vz-loadtest",
 		VirtualUser: 1000,
 		UC: config.UserConfiguration{

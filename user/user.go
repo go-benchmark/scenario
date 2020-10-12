@@ -37,7 +37,7 @@ func (u *User) SignUp(ctx context.Context) (err error) {
 		"Content-Type": "application/json",
 	}
 	signupPath := "/api/users"
-	signupURL := fmt.Sprintf("https://%s%s", u.host, signupPath)
+	signupURL := fmt.Sprintf("%s%s", u.host, signupPath)
 
 	signupClient, err := http.NewHttpClient(ctx, signupPath)
 
@@ -61,7 +61,7 @@ func (u *User) Login(ctx context.Context) (err error) {
 	}
 
 	loginPath := "/api/users/login"
-	loginURL := fmt.Sprintf("https://%s%s", u.host, loginPath)
+	loginURL := fmt.Sprintf("%s%s", u.host, loginPath)
 	loginClient, err := http.NewHttpClient(ctx, loginPath)
 
 	uaS, _ := json.Marshal(u.ua)
@@ -116,7 +116,7 @@ func (u *User) CreateLoEngine(ctx context.Context) error {
 // save the engine to local engines array
 func (u *User) createEngine(ctx context.Context, et engineType) (err error) {
 	newEnginePath := "/api/users/[id]/services"
-	newEngineURL := fmt.Sprintf("https://%s/api/users/%s/services", u.host, u.AT.UserID)
+	newEngineURL := fmt.Sprintf("%s/api/users/%s/services", u.host, u.AT.UserID)
 	newEngineClient, err := http.NewHttpClient(ctx, newEnginePath)
 
 	req, _ := json.Marshal(map[string]engineType{
@@ -141,7 +141,7 @@ func (u *User) createEngine(ctx context.Context, et engineType) (err error) {
 func (u *User) AttachDevice(ctx context.Context, d *device.Device) (err error) {
 	// create new home
 	// newDevicePath := "/api/users/[id]/devices"
-	// newDeviceURL := fmt.Sprintf("https://%s/api/users/%s/devices", u.host, u.at.UserID)
+	// newDeviceURL := fmt.Sprintf("%s/api/users/%s/devices", u.host, u.at.UserID)
 	// newDeviceClient, err := http.NewHttpClient(ctx, newDevicePath)
 
 	// req, _ := json.Marshal(map[string]string{
@@ -162,7 +162,7 @@ func (u *User) AttachDevice(ctx context.Context, d *device.Device) (err error) {
 func (u *User) CreateDeviceSet(ctx context.Context) (err error) {
 	// create new deviceset
 	newDeviceSetPath := "/api/users/[id]/devicesets"
-	newDeviceSetURL := fmt.Sprintf("https://%s/api/users/%s/devicesets", u.host, u.AT.UserID)
+	newDeviceSetURL := fmt.Sprintf("%s/api/users/%s/devicesets", u.host, u.AT.UserID)
 	newDeviceSetClient, err := http.NewHttpClient(ctx, newDeviceSetPath)
 
 	var name string
@@ -238,7 +238,7 @@ func (u *User) CreateHeartbeats(ctx context.Context) (err error) {
 func (u *User) GetDeviceStatus(ctx context.Context, d *device.Device) (err error) {
 
 	newDevicePath := "/api/devices/[id]/status"
-	newDeviceURL := fmt.Sprintf("https://%s/api/devices/%s/status", u.host, d.ID)
+	newDeviceURL := fmt.Sprintf("%s/api/devices/%s/status", u.host, d.ID)
 	newDeviceClient, err := http.NewHttpClient(ctx, newDevicePath)
 
 	if _, err = newDeviceClient.Get(ctx, newDeviceURL, u.headers()); err != nil {

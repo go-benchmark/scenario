@@ -39,7 +39,7 @@ func (u *User) NewDeviceSet(ctx context.Context) (ds DeviceSet, err error) {
 func (u *User) AddDevicesToDeviceSet(ctx context.Context, ds *DeviceSet, d device.Device) (err error) {
 	// add devices to a deviceset
 	newDeviceSetPath := "/api/devicesets/[id]/add-devices"
-	newDeviceSetURL := fmt.Sprintf("https://%s/api/devicesets/%s/add-devices", u.host, ds.ID)
+	newDeviceSetURL := fmt.Sprintf("%s/api/devicesets/%s/add-devices", u.host, ds.ID)
 	newDeviceSetClient, err := http.NewHttpClient(ctx, newDeviceSetPath)
 
 	req, _ := json.Marshal([]device.DeviceReq{
@@ -117,7 +117,7 @@ func (u *User) AddZones(ctx context.Context, zoneCount int) (err error) {
 // AddZone add zone and attach device(bot) into it
 func (u *User) AddZone(ctx context.Context, ds *DeviceSet) (err error) {
 	newDeviceSetPath := "/api/devicesets/[id]/zones"
-	newDeviceSetURL := fmt.Sprintf("https://%s/api/devicesets/%s/zones", u.host, ds.ID)
+	newDeviceSetURL := fmt.Sprintf("%s/api/devicesets/%s/zones", u.host, ds.ID)
 	newDeviceSetClient, err := http.NewHttpClient(ctx, newDeviceSetPath)
 
 	// get devices(bots) from deviceset

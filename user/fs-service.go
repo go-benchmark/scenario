@@ -77,7 +77,7 @@ type manualSchedule struct {
 // CreateService create a service by engine type
 func (u *User) CreateService(ctx context.Context, ds DeviceSet, et engineType) (err error) {
 	newServicePath := "/api/devicesets/[id]/services"
-	newServiceURL := fmt.Sprintf("https://%s/api/devicesets/%s/services", u.host, ds.ID)
+	newServiceURL := fmt.Sprintf("%s/api/devicesets/%s/services", u.host, ds.ID)
 	newServiceClient, err := http.NewHttpClient(ctx, newServicePath)
 
 	req, _ := json.Marshal(map[string]string{
@@ -100,7 +100,7 @@ func (u *User) CreateService(ctx context.Context, ds DeviceSet, et engineType) (
 // AttachServices attach services to a deviceset
 func (u *User) AttachServices(ctx context.Context, ds DeviceSet, serviceIds []string) (err error) {
 	newServicePath := "/api/devicesets/[id]/attach-services"
-	newServiceURL := fmt.Sprintf("https://%s/api/devicesets/%s/attach-services", u.host, ds.ID)
+	newServiceURL := fmt.Sprintf("%s/api/devicesets/%s/attach-services", u.host, ds.ID)
 	newServiceClient, err := http.NewHttpClient(ctx, newServicePath)
 
 	req, _ := json.Marshal(map[string][]string{
@@ -193,7 +193,7 @@ func (u *User) RunServices(ctx context.Context, cmd string) (err error) {
 func (u *User) RunService(ctx context.Context, s FSService, cmd, moID string, bots []string) (err error) {
 
 	newServicePath := "/api/services/run/[deviceId(moId)]"
-	newServiceURL := fmt.Sprintf("https://%s/api/services/run/%s", u.host, moID)
+	newServiceURL := fmt.Sprintf("%s/api/services/run/%s", u.host, moID)
 	newServiceClient, err := http.NewHttpClient(ctx, newServicePath)
 
 	var em EM
@@ -235,7 +235,7 @@ func (u *User) CheckConfig(ctx context.Context, s FSService) (err error) {
 func (u *User) GetConfig(ctx context.Context, s FSService) (cs ConfigService, err error) {
 
 	newServicePath := "/api/services/[id]/config"
-	newServiceURL := fmt.Sprintf("https://%s/api/services/%s/config", u.host, s.ID)
+	newServiceURL := fmt.Sprintf("%s/api/services/%s/config", u.host, s.ID)
 	newServiceClient, err := http.NewHttpClient(ctx, newServicePath)
 
 	var buf []byte
@@ -252,7 +252,7 @@ func (u *User) GetConfig(ctx context.Context, s FSService) (cs ConfigService, er
 func (u *User) GetHistories(ctx context.Context, s FSService) (err error) {
 
 	newServicePath := "/api/services/[id]/histories"
-	newServiceURL := fmt.Sprintf("https://%s/api/services/%s/histories", u.host, s.ID)
+	newServiceURL := fmt.Sprintf("%s/api/services/%s/histories", u.host, s.ID)
 	newServiceClient, err := http.NewHttpClient(ctx, newServicePath)
 
 	switch s.EngineType {
@@ -323,7 +323,7 @@ func (u *User) GetHistories(ctx context.Context, s FSService) (err error) {
 func (u *User) CreateHeartbeat(ctx context.Context, s FSService) (err error) {
 
 	newServicePath := "/api/services/[id]/heartbeats"
-	newServiceURL := fmt.Sprintf("https://%s/api/services/%s/heartbeats", u.host, s.ID)
+	newServiceURL := fmt.Sprintf("%s/api/services/%s/heartbeats", u.host, s.ID)
 	newServiceClient, err := http.NewHttpClient(ctx, newServicePath)
 
 	if _, err = newServiceClient.Post(ctx, newServiceURL, nil, u.headers()); err != nil {
@@ -337,7 +337,7 @@ func (u *User) CreateHeartbeat(ctx context.Context, s FSService) (err error) {
 func (u *User) SetServiceParams(ctx context.Context, s FSService) (err error) {
 
 	newServicePath := "/api/services/[id]/params"
-	newServiceURL := fmt.Sprintf("https://%s/api/services/%s/params", u.host, s.ID)
+	newServiceURL := fmt.Sprintf("%s/api/services/%s/params", u.host, s.ID)
 	newServiceClient, err := http.NewHttpClient(ctx, newServicePath)
 
 	var em EM
@@ -362,7 +362,7 @@ func (u *User) SetServiceParams(ctx context.Context, s FSService) (err error) {
 func (u *User) GetServiceParams(ctx context.Context, s FSService) (err error) {
 
 	newServicePath := "/api/services/[id]/params"
-	newServiceURL := fmt.Sprintf("https://%s/api/services/%s/params", u.host, s.ID)
+	newServiceURL := fmt.Sprintf("%s/api/services/%s/params", u.host, s.ID)
 	newServiceClient, err := http.NewHttpClient(ctx, newServicePath)
 
 	if _, err = newServiceClient.Get(ctx, newServiceURL, u.headers()); err != nil {

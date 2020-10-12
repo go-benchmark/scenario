@@ -71,11 +71,11 @@ type DeviceReq struct {
 }
 
 // NewDevice create a new device
-func NewDevice(opts *config.Options, vu int,log *logger.Log) (*Device, error) {
+func NewDevice(opts *config.Options, vu int, log *logger.Log) (*Device, error) {
 	d := &Device{
 		ID:       faker.UUIDDigit(),
 		services: make(map[string]*service.Service),
-		log :     log,
+		log:      log,
 	}
 
 	d.setOpts(opts, vu)
@@ -99,7 +99,7 @@ func (d *Device) setOpts(opts *config.Options, vu int) *Device {
 // GetMqttAuth get mqtt auth
 func (d *Device) GetMqttAuth(ctx context.Context) (err error) {
 	path := "/api/fws"
-	url := "https://" + d.host + path
+	url := d.host + path
 
 	req := map[string]string{
 		"deviceId": d.ID,
