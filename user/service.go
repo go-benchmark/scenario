@@ -11,12 +11,12 @@ import (
 type User struct {
 	host              string
 	ua                UserAccount
-	at                Accesstoken
+	AT                Accesstoken
 	home              Home
 	heartbeatInterval int
 
 	engines    map[engineType]engine
-	deviceSets map[string]DeviceSet
+	DeviceSets map[string]DeviceSet
 	services   map[string]FSService
 }
 
@@ -60,7 +60,7 @@ func NewUser(opts *config.Options) *User {
 		host:              opts.Host,
 		heartbeatInterval: opts.UC.RealtimeHBInterval,
 		engines:           make(map[engineType]engine),
-		deviceSets:        make(map[string]DeviceSet),
+		DeviceSets:        make(map[string]DeviceSet),
 		services:          make(map[string]FSService),
 	}
 }

@@ -144,7 +144,7 @@ func (u *User) RunServices(ctx context.Context, cmd string) (err error) {
 				c <- err
 			}()
 			// get deviceset from service
-			ds, ok := u.deviceSets[s.DeviceSetID]
+			ds, ok := u.DeviceSets[s.DeviceSetID]
 			if !ok {
 				err = fmt.Errorf("service %s dont have deviceset", s.ID)
 				return
@@ -258,7 +258,7 @@ func (u *User) GetHistories(ctx context.Context, s FSService) (err error) {
 	switch s.EngineType {
 	case string(location):
 		// get deviceset from service
-		ds, ok := u.deviceSets[s.DeviceSetID]
+		ds, ok := u.DeviceSets[s.DeviceSetID]
 		if !ok {
 			err = fmt.Errorf("service %s dont have deviceset", s.ID)
 			return

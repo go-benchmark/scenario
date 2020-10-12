@@ -92,7 +92,7 @@ func (u *User) AddDevicesToDeviceSet(ctx context.Context, ds *DeviceSet, d devic
 //AddServiceToDeviceSets 2.5 Add services to a deviceset
 func (u *User) AddServiceToDeviceSets(ctx context.Context, ds DeviceSet) (err error) {
 
-	for _, ds := range u.deviceSets {
+	for _, ds := range u.DeviceSets {
 		// create 2 service with engine type in [softSecurity,location]
 		if err = u.CreateService(ctx, ds, softSecurity); err != nil {
 			return
@@ -103,13 +103,13 @@ func (u *User) AddServiceToDeviceSets(ctx context.Context, ds DeviceSet) (err er
 
 //AddZones ### 2.6. Create 2 zones, a zone has one bot
 func (u *User) AddZones(ctx context.Context, zoneCount int) (err error) {
-	for k, ds := range u.deviceSets {
+	for k, ds := range u.DeviceSets {
 		for i := 0; i < zoneCount; i++ {
 			if err = u.AddZone(ctx, &ds); err != nil {
 				return
 			}
 		}
-		u.deviceSets[k] = ds
+		u.DeviceSets[k] = ds
 	}
 	return
 }

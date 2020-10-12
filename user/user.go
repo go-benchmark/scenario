@@ -76,7 +76,7 @@ func (u *User) Login(ctx context.Context) (err error) {
 		return
 	}
 
-	u.at = at
+	u.AT = at
 
 	return
 }
@@ -96,8 +96,8 @@ func (u *User) headers() map[string]string {
 	headers := map[string]string{
 		"Content-Type": "application/json",
 	}
-	if u.at.ID != "" {
-		headers["Authorization"] = u.at.ID
+	if u.AT.ID != "" {
+		headers["Authorization"] = u.AT.ID
 	}
 	return headers
 }
@@ -116,7 +116,7 @@ func (u *User) CreateLoEngine(ctx context.Context) error {
 // save the engine to local engines array
 func (u *User) createEngine(ctx context.Context, et engineType) (err error) {
 	newEnginePath := "/api/users/[id]/services"
-	newEngineURL := fmt.Sprintf("https://%s/api/users/%s/services", u.host, u.at.UserID)
+	newEngineURL := fmt.Sprintf("https://%s/api/users/%s/services", u.host, u.AT.UserID)
 	newEngineClient, err := http.NewHttpClient(ctx, newEnginePath)
 
 	req, _ := json.Marshal(map[string]engineType{
@@ -162,7 +162,7 @@ func (u *User) AttachDevice(ctx context.Context, d *device.Device) (err error) {
 func (u *User) CreateDeviceSet(ctx context.Context) (err error) {
 	// create new deviceset
 	newDeviceSetPath := "/api/users/[id]/devicesets"
-	newDeviceSetURL := fmt.Sprintf("https://%s/api/users/%s/devicesets", u.host, u.at.UserID)
+	newDeviceSetURL := fmt.Sprintf("https://%s/api/users/%s/devicesets", u.host, u.AT.UserID)
 	newDeviceSetClient, err := http.NewHttpClient(ctx, newDeviceSetPath)
 
 	var name string
@@ -180,7 +180,7 @@ func (u *User) CreateDeviceSet(ctx context.Context) (err error) {
 		return
 	}
 	// save deviceset to user
-	u.deviceSets[ds.ID] = ds
+	u.DeviceSets[ds.ID] = ds
 	return
 }
 
@@ -190,19 +190,19 @@ func (u *User) AddDevicesToDeviceSets(ctx context.Context, d *device.Device) (er
 		err = fmt.Errorf("device is nil")
 		return
 	}
-	for k, ds := range u.deviceSets {
+	for k, ds := range u.DeviceSets {
 		if err = u.AddDevicesToDeviceSet(ctx, &ds, *d); err != nil {
 			return
 		}
 		// update deviceset
-		u.deviceSets[k] = ds
+		u.DeviceSets[k] = ds
 	}
 	return
 }
 
 // AddServicesToDeviceSets 2.4 Add devices to devicesets, add 1 MO, 2 bots to the deviceset
 func (u *User) AddServicesToDeviceSets(ctx context.Context) (err error) {
-	for _, ds := range u.deviceSets {
+	for _, ds := range u.DeviceSets {
 		if err = u.AddServiceToDeviceSets(ctx, ds); err != nil {
 			return
 		}

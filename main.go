@@ -18,14 +18,32 @@ var log *logger.Log
 
 // export scenarios
 func export() scenario.Vus {
-	const vu = 10000
 	log = logger.NewStdLogger()
-	opts, _ = config.ConfigureOptions(vu)
+	opts := &config.Options{
+		Host:        "owi-fs-loadtest.veriksystems.com",
+		MQTTPrefix:  "org/vz-loadtest",
+		VirtualUser: 1000,
+		UC: config.UserConfiguration{
+			RunServiceDelay:    10.0,
+			GetDataInterval:    600.0,
+			RealtimeInterval:   86400.0,
+			RealtimePeriod:     600.0,
+			RealtimeHBInterval: 6,
+			StartServiceDelay:  900.0,
+		},
+		DC: config.DeviceConfiguration{
+			RealtimeInterval: 1.0,
+			HistoryInterval:  100.0,
+		},
+		SC: config.ServiceConfiguration{
+			RealtimeLength: 6,
+		},
+	}
 	log.Infow("starting run scenario", "opts", opts)
 
 	return scenario.Vus{
 		{
-			Nu:   vu,
+			Nu:   opts.VirtualUser,
 			Rate: 0.5,
 			Fu:   f,
 		},
@@ -34,61 +52,60 @@ func export() scenario.Vus {
 
 func f(ctx context.Context, vui int) {
 	var err error
-	const realtimeInterval = 86400
 
 	// 1. device creation
 	d, _ := device.NewDevice(opts, vui, log)
 
 	// 1.1 device calls home
 	if err := d.GetMqttAuth(ctx); err != nil {
-		log.Errorw("FAILED call home", "vui", vui, "user", nil, "device", d, "error", err)
+		log.Errorw("FAILED call home", "vui", vui, "user", nil, "device", d.ID, "error", err)
 		return
 	}
 	// 1.1 device connect MQTT
 	if err = d.ConnectMqtt(ctx); err != nil {
-		log.Errorw("FAILED connecting to MQTT broker", "vui", vui, "user", nil, "device", d, "error", err)
+		log.Errorw("FAILED connecting to MQTT broker", "vui", vui, "user", nil, "device", d.ID, "error", err)
 		return
 	}
 
 	// 1.2 run the device, the realtime and history are the background tasks
 	if err = d.Run(ctx); err != nil {
-		log.Errorw("FAILED starting a device", "vui", vui, "user", nil, "device", d, "error", err)
+		log.Errorw("FAILED starting a device", "vui", vui, "user", nil, "device", d.ID, "error", err)
 	}
 
 	// 2. user action
 	u := user.NewUser(opts)
 
 	if err = u.GetUserAccount(ctx); err != nil {
-		log.Errorw("FAILED get user account", "vui", vui, "user", u, "device", d, "error", err)
+		log.Errorw("FAILED get user account", "vui", vui, "user", u.AT, "device", d.ID, "error", err)
 		return
 	}
 	if err = u.SignUp(ctx); err != nil {
-		log.Errorw("FAILED create a user", "vui", vui, "user", u, "device", d, "error", err)
+		log.Errorw("FAILED create a user", "vui", vui, "user", u.AT, "device", d.ID, "error", err)
 		return
 	}
 	if err = u.Login(ctx); err != nil {
-		log.Errorw("FAILED login user", "vui", vui, "user", u, "device", d, "error", err)
+		log.Errorw("FAILED login user", "vui", vui, "user", u.AT, "device", d.ID, "error", err)
 		return
 	}
 
 	// 2.3 Create a deviceset
 	if err = u.CreateDeviceSet(ctx); err != nil {
-		log.Errorw("FAILED create a deviceset to a user", "vui", vui, "user", u, "device", d, "error", err)
+		log.Errorw("FAILED create a deviceset to a user", "vui", vui, "user", u.AT, "device", d.ID, "error", err)
 		return
 	}
 	// 2.4 Add devices to deviceset
 	if err = u.AddDevicesToDeviceSets(ctx, d); err != nil {
-		log.Errorw("FAILED  add devices to devicesets to a user", "vui", vui, "user", u, "device", d, "error", err)
+		log.Errorw("FAILED  add devices to devicesets to a user", "vui", vui, "user", u.AT, "device", d.ID, "error", err)
 		return
 	}
 	// ### 2.5 Add service to a deviceset
 	if err = u.AddServicesToDeviceSets(ctx); err != nil {
-		log.Errorw("FAILED add services to devicesets to a user", "vui", vui, "user", u, "device", d, "error", err)
+		log.Errorw("FAILED add services to devicesets to a user", "vui", vui, "user", u.AT, "device", d.ID, "error", err)
 		return
 	}
 	// ### 2.6. Create 2 zones, a zone has one bot
 	if err = u.AddZones(ctx, 2); err != nil {
-		log.Errorw("FAILED create 2 zone to a user", "vui", vui, "user", u, "device", d, "error", err)
+		log.Errorw("FAILED create 2 zone to a user", "vui", vui, "user", u.AT, "device", d.ID, "error", err)
 		return
 	}
 	// delay to ensure device is online
@@ -96,7 +113,7 @@ func f(ctx context.Context, vui int) {
 
 	// // ### 2.7. Run services
 	if err = u.StartServices(ctx); err != nil {
-		log.Errorw("FAILED start services to a user", "vui", vui, "user", u, "device", d, "error", err)
+		log.Errorw("FAILED start services to a user", "vui", vui, "user", u.AT, "device", d.ID, "error", err)
 		return
 	}
 	//delay to ensure service is running
@@ -107,7 +124,7 @@ func f(ctx context.Context, vui int) {
 	// Second scenario: Continue user rountine when meet errors in user behavior
 	// Third scenario: Try to simulate user behavior in case the server is not adapt yet.
 	if err = u.CheckConfigs(ctx); err != nil {
-		log.Errorw("FAILED check services config to a user", "vui", vui, "user", u, "device", d, "error", err)
+		log.Errorw("FAILED check services config to a user", "vui", vui, "user", u.AT, "device", d.ID, "error", err)
 		return
 	}
 	// // loop user : get realtime data of a service, get history of service
@@ -120,7 +137,7 @@ func f(ctx context.Context, vui int) {
 				return
 			default:
 				if err = u.GetHistoriesByUser(ctx); err != nil {
-					log.Errorw("FAILED get histories of services to a user", "vui", vui, "user", u, "device", d, "error", err)
+					log.Errorw("FAILED get histories of services to a user", "vui", vui, "user", u.AT, "device", d.ID, "error", err)
 					return
 				}
 			}
@@ -141,13 +158,13 @@ func f(ctx context.Context, vui int) {
 						break
 					}
 					if err = u.CreateHeartbeats(ctx); err != nil {
-						log.Errorw("FAILED get realtime data of services to a user", "vui", vui, "user", u, "device", d, "error", err)
+						log.Errorw("FAILED get realtime data of services to a user", "vui", vui, "user", u.AT, "device", d.ID, "error", err)
 						return
 					}
 					gobench.SleepRatePoisson(1 / float64(opts.UC.RealtimeHBInterval))
 				}
 				// sleep to next in realtime request interval
-				gobench.SleepRatePoisson(1 / (realtimeInterval - opts.UC.RealtimePeriod))
+				gobench.SleepRatePoisson(1 / (opts.UC.RealtimeInterval - opts.UC.RealtimePeriod))
 			}
 		}
 	}(ctx)
@@ -159,7 +176,7 @@ func f(ctx context.Context, vui int) {
 				return
 			default:
 				if err = u.GetDeviceStatus(ctx, d); err != nil {
-					log.Errorw("FAILED get device status by a user", "vui", vui, "user", u, "device", d, "error", err)
+					log.Errorw("FAILED get device status by a user", "vui", vui, "user", u.AT, "device", d.ID, "error", err)
 					return
 				}
 			}
@@ -174,7 +191,7 @@ func f(ctx context.Context, vui int) {
 				return
 			default:
 				if err = u.GetServiceParamsByUser(ctx); err != nil {
-					log.Errorw("FAILED get service params of services by a user", "vui", vui, "user", u, "device", d, "error", err)
+					log.Errorw("FAILED get service params of services by a user", "vui", vui, "user", u.AT, "device", d.ID, "error", err)
 					return
 				}
 			}
